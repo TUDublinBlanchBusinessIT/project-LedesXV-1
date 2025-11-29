@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { auth } from "../services/firebase";
+console.log("Firebase connected:", auth);
 
 
 export default function LoginScreen() {
