@@ -1,7 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+
 export default function LoginScreen() {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -29,7 +32,9 @@ export default function LoginScreen() {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <Text style={styles.smallText}>No account? Register above.</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+        <Text style={styles.link}>Don’t have an account? Register</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -71,6 +76,12 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
     color: '#555'
-  }
+  },
+  link: {
+  marginTop: 15,
+  textAlign: 'center',
+  color: '#219EBC',
+  fontWeight: '600'
+}
 });
 
