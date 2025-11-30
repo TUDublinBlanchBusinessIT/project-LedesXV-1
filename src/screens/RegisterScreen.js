@@ -1,10 +1,35 @@
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { auth } from "../services/firebase.js";
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const handleRegister = async () => {
+    console.log("Register pressed:", email); // DEBUG LOG
+
+    if (!email || !password) {
+      Alert.alert("Missing Fields", "Please fill in all fields.");
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+
+      Alert.alert("Success", "Account created successfully!");
+
+      // Reset form
+      setName('');
+      setEmail('');
+      setPassword('');
+
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -34,11 +59,13 @@ export default function RegisterScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
 
-      <Text style={styles.smallText}>Already have an account? Log in above.</Text>
+      <Text style={styles.smallText}>
+        Already have an account? Login above.
+      </Text>
 
     </View>
   );
