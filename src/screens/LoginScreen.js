@@ -1,17 +1,37 @@
-import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { auth } from "../services/firebase";
-console.log("Firebase connected:", auth);
 
-
-export default function LoginScreen() {
-  const navigation = useNavigation();
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleLogin = async () => {
+    console.log("Login pressed:", email); // DEBUG LOG
+
+    if (!email || !password) {
+      Alert.alert("Missing Fields", "Please fill in both email and password.");
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      Alert.alert("Success", "Logged in successfully!");
+
+      // Later we will replace this with real state
+      navigation.navigate("Home");
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Login Error", error.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
+
       <Text style={styles.title}>Login</Text>
 
       <TextInput
@@ -30,13 +50,12 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>Don’t have an account? Register</Text>
-      </TouchableOpacity>
+      <Text style={styles.smallText}>No account? Register above.</Text>
+
     </View>
   );
 }
@@ -78,12 +97,5 @@ const styles = StyleSheet.create({
     marginTop: 15,
     textAlign: 'center',
     color: '#555'
-  },
-  link: {
-  marginTop: 15,
-  textAlign: 'center',
-  color: '#219EBC',
-  fontWeight: '600'
-}
+  }
 });
-
