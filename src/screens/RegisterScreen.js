@@ -1,13 +1,14 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { auth } from "../services/firebase.js";
+import { auth } from "../services/firebase";
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  
   const handleRegister = async () => {
     console.log("Register pressed:", email); // DEBUG LOG
 
