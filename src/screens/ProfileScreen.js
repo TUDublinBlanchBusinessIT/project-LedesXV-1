@@ -4,6 +4,8 @@ import { auth } from "../services/firebase";
 
 export default function ProfileScreen() {
 
+  const user = auth.currentUser;
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -15,11 +17,18 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
+
       <Text style={styles.title}>Profile</Text>
+
+      <View style={styles.infoBox}>
+        <Text style={styles.label}>Logged in as:</Text>
+        <Text style={styles.email}>{user?.email}</Text>
+      </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
+
     </View>
   );
 }
@@ -36,6 +45,25 @@ const styles = StyleSheet.create({
     marginBottom: 40, 
     fontWeight: "600" 
   },
+  infoBox: {
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 40,
+    width: "80%",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ddd"
+  },
+  label: {
+    fontSize: 16,
+    color: "#777"
+  },
+  email: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginTop: 5
+  },
   logoutButton: {
     backgroundColor: "#d9534f",
     paddingVertical: 12,
@@ -48,3 +76,4 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   }
 });
+
