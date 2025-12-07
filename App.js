@@ -10,11 +10,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
       setLoading(false);
     });
-
     return unsub;
   }, []);
 
@@ -26,4 +25,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-

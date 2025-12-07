@@ -1,32 +1,69 @@
-import { useState } from "react";
+import { addDoc, collection, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { auth, db } from "../services/firebase";
 
 export default function PostSkillScreen() {
-
   const [skill, setSkill] = useState("");
-  const [description, setDescription] = useState("");
+  const [desc, setDesc] = useState("");
   const [credits, setCredits] = useState("");
+  const [name, setName] = useState("");
 
-  const handlePostSkill = () => {
-    if (!skill || !description || !credits) {
-      Alert.alert("Missing fields", "Please fill in all fields.");
+  useEffect(() => {
+    const fetchName = async () => {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        setName(snap.data().name);
+      }
+    };
+    fetchName();
+  }, []);
+
+  const handlePost = async () => {
+    console.log("Post button pressed");
+
+    if (!skill || !desc || !credits) {
+      console.log("Missing fields");
+      Alert.alert("Missing Fields", "Fill all fields.");
       return;
     }
 
-    Alert.alert("Success", "Your skill has been posted!");
-    setSkill("");
-    setDescription("");
-    setCredits("");
+    if (!auth.currentUser) {
+      console.log("No current user");
+      Alert.alert("Not logged in", "Please login again.");
+      return;
+    }
+
+    try {
+      console.log("About to add doc");
+
+      await addDoc(collection(db, "skills"), {
+        skill,
+        description: desc,
+        credits: Number(credits),
+        userName: name || "Unknown user",
+        userEmail: auth.currentUser.email,
+        createdAt: serverTimestamp(),
+      });
+
+      setSkill("");
+      setDesc("");
+      setCredits("");
+
+    } catch (err) {
+      console.log("Error while posting skill:", err);
+      Alert.alert("Error", err.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-
       <Text style={styles.title}>Post a Skill</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Skill Name"
+        placeholder="Skill"
         value={skill}
         onChangeText={setSkill}
       />
@@ -34,57 +71,30 @@ export default function PostSkillScreen() {
       <TextInput
         style={styles.input}
         placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-        multiline
+        value={desc}
+        onChangeText={setDesc}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Credits (1 to 3)"
+        placeholder="Credits (1-3)"
         value={credits}
         onChangeText={setCredits}
         keyboardType="numeric"
       />
 
-      <TouchableOpacity style={styles.button} onPress={handlePostSkill}>
+      <TouchableOpacity style={styles.button} onPress={handlePost}>
         <Text style={styles.buttonText}>Post Skill</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    paddingTop: 40,
-    backgroundColor: "#f4f4f4" 
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "600",
-    marginBottom: 30
-  },
-  input: {
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: "#ddd"
-  },
-  button: {
-    backgroundColor: "#219EBC",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 10
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    textAlign: "center"
-  }
+  container: { flex: 1, paddingTop: 40, padding: 20 },
+  title: { fontSize: 26, marginBottom: 20 },
+  input: { padding: 12, backgroundColor: "#fff", borderRadius: 8, marginBottom: 15, borderWidth: 1 },
+  button: { backgroundColor: "#219EBC", padding: 15, borderRadius: 8 },
+  buttonText: { color: "#fff", textAlign: "center", fontWeight: "600" }
 });
 

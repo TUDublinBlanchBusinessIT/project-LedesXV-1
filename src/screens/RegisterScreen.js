@@ -1,45 +1,42 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { auth } from "../services/firebase";
+import { auth, db } from "../services/firebase";
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  
   const handleRegister = async () => {
-    console.log("Register pressed:", email); // DEBUG LOG
-
-    if (!email || !password) {
-      Alert.alert("Missing Fields", "Please fill in all fields.");
+    if (!name || !email || !password) {
+      Alert.alert("Missing fields", "Please fill all fields.");
       return;
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-      Alert.alert("Success", "Account created successfully!");
+      // Save user profile data
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        name: name,
+        email: email,
+      });
 
-      // Reset form
-      setName('');
-      setEmail('');
-      setPassword('');
-
-    } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Success", "Account created!");
+    } catch (err) {
+      Alert.alert("Error", err.message);
     }
   };
 
   return (
     <View style={styles.container}>
-
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>Register</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Full Name"
+        placeholder="Name"
         value={name}
         onChangeText={setName}
       />
@@ -47,67 +44,30 @@ export default function RegisterScreen() {
       <TextInput
         style={styles.input}
         placeholder="Email"
+        autoCapitalize="none"
         value={email}
         onChangeText={setEmail}
-        autoCapitalize="none"
       />
 
       <TextInput
         style={styles.input}
         placeholder="Password"
+        secureTextEntry
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
       />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
-
-      <Text style={styles.smallText}>
-        Already have an account? Login above.
-      </Text>
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f4f4f4'
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 35
-  },
-  input: {
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ddd'
-  },
-  button: {
-    backgroundColor: '#219EBC',
-    padding: 14,
-    borderRadius: 8,
-    marginTop: 10
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '600'
-  },
-  smallText: {
-    marginTop: 15,
-    textAlign: 'center',
-    color: '#555'
-  }
+  container: { flex: 1, justifyContent: "center", padding: 20 },
+  title: { fontSize: 28, textAlign: "center", marginBottom: 40 },
+  input: { padding: 12, backgroundColor: "#fff", borderRadius: 8, marginBottom: 15, borderWidth: 1 },
+  button: { backgroundColor: "#219EBC", padding: 15, borderRadius: 8 },
+  buttonText: { color: "#fff", textAlign: "center", fontWeight: "600" }
 });
