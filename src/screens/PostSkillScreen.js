@@ -92,7 +92,7 @@ export default function PostSkillScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, paddingTop: 40, padding: 20 },
-  title: { fontSize: 26, marginBottom: 20 },
+  title: {fontSize: 26, fontWeight: "600", marginBottom: 20},
   input: { padding: 12, backgroundColor: "#fff", borderRadius: 8, marginBottom: 15, borderWidth: 1 },
   button: { backgroundColor: "#219EBC", padding: 15, borderRadius: 8 },
   buttonText: { color: "#fff", textAlign: "center", fontWeight: "600" }

@@ -46,7 +46,7 @@ export default function MyRequestsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#F4F4F4" },
-  title: { fontSize: 32, fontWeight: "700", marginBottom: 20 },
+  title: {fontSize: 26, fontWeight: "600", marginBottom: 20},
   empty: { color: "#777", fontSize: 16, marginTop: 10 },
   card: {
     backgroundColor: "#fff",
